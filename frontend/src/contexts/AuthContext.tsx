@@ -23,7 +23,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    checkAuthStatus()
+    // Só verifica autenticação se não estivermos em páginas públicas
+    const publicPaths = ['/', '/login', '/register']
+    const currentPath = window.location.pathname
+    
+    if (!publicPaths.includes(currentPath)) {
+      checkAuthStatus()
+    } else {
+      setLoading(false)
+    }
   }, [])
 
   const checkAuthStatus = async () => {

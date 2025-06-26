@@ -137,25 +137,6 @@ export function GoalsPage() {
     }
   })
 
-  const addContributionMutation = useMutation({
-    mutationFn: ({ id, amount }: { id: string; amount: number }) => 
-      goalsApi.addContribution(id, amount),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['goals'] })
-      toast({
-        title: "Aporte adicionado!",
-        description: "Seu aporte foi registrado com sucesso.",
-        variant: "success"
-      })
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erro ao adicionar aporte",
-        description: error.response?.data?.error || "Ocorreu um erro inesperado. Tente novamente.",
-        variant: "destructive"
-      })
-    }
-  })
 
   const goals: Goal[] = goalsData?.data?.goals || []
 

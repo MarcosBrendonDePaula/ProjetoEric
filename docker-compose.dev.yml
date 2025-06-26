@@ -1,9 +1,8 @@
-
 services:
   # MongoDB Database
   mongodb:
     image: mongo:7.0
-    container_name: planejador-mongodb
+    container_name: planejador-mongodb-dev
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
@@ -12,19 +11,20 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_dev_data:/data/db
     networks:
       - planejador-network
 
-  # Backend API
+  # Backend API - Development
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: planejador-backend
+      target: base
+    container_name: planejador-backend-dev
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3001
       - MONGODB_URI=mongodb://admin:senha123@mongodb:27017/planejador-financeiro?authSource=admin
       - JWT_SECRET=your-super-secret-jwt-key-change-in-production-min-32-characters-for-security
@@ -43,24 +43,21 @@ services:
       - /app/node_modules
     networks:
       - planejador-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    command: bun run dev
 
-  # Frontend React App
+  # Frontend React App - Development
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: planejador-frontend
+      target: development
+    container_name: planejador-frontend-dev
     restart: unless-stopped
     environment:
       - VITE_API_URL=http://localhost:3001
       - VITE_APP_TITLE=Planejador Financeiro
     ports:
-      - "5173:80"
+      - "5173:5173"
     depends_on:
       - backend
     volumes:
@@ -69,23 +66,23 @@ services:
     networks:
       - planejador-network
 
-  # Redis para cache (opcional)
+  # Redis para cache
   redis:
     image: redis:7-alpine
-    container_name: planejador-redis
+    container_name: planejador-redis-dev
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - redis_dev_data:/data
     networks:
       - planejador-network
     command: redis-server --appendonly yes
 
 volumes:
-  mongodb_data:
+  mongodb_dev_data:
     driver: local
-  redis_data:
+  redis_dev_data:
     driver: local
 
 networks:

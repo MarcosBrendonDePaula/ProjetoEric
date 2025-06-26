@@ -1,0 +1,1 @@
+// This file has been removed - using simple MongoDB connection in index.ts instead

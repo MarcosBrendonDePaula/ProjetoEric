@@ -1,0 +1,39 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: planejador-mongodb-storage
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: senha123
+      MONGO_INITDB_DATABASE: planejador-financeiro
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_storage_data:/data/db
+    networks:
+      - planejador-network
+
+  # Redis para cache
+  redis:
+    image: redis:7-alpine
+    container_name: planejador-redis-storage
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_storage_data:/data
+    networks:
+      - planejador-network
+    command: redis-server --appendonly yes
+
+volumes:
+  mongodb_storage_data:
+    driver: local
+  redis_storage_data:
+    driver: local
+
+networks:
+  planejador-network:
+    driver: bridge
