@@ -8,6 +8,9 @@ import { authRoutes } from './routes/auth'
 import { userRoutes } from './routes/user'
 import { profileRoutes } from './routes/profile'
 import { goalRoutes } from './routes/goal'
+import { marketRoutes } from './routes/market'
+import { notificationRoutes } from './routes/notifications'
+import { cronService } from './services/cronService'
 
 // Conectar ao MongoDB
 const connectDB = async () => {
@@ -21,6 +24,9 @@ const connectDB = async () => {
 }
 
 connectDB()
+
+// Iniciar serviços
+cronService.startMarketDataUpdates()
 
 const app = new Elysia()
   .use(cors({
@@ -54,6 +60,8 @@ const app = new Elysia()
   .use(userRoutes)
   .use(profileRoutes)
   .use(goalRoutes)
+  .use(marketRoutes)
+  .use(notificationRoutes)
   .listen(process.env.PORT || 3001)
 
 console.log(`🦊 Elysia is running at http://localhost:${process.env.PORT || 3001}`)
