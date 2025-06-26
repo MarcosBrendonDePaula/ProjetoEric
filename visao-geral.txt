@@ -1,0 +1,203 @@
+1. Visão Geral e Objetivo
+Criar um planejador financeiro digital que ajude o usuário a:
+
+Definir metas de patrimônio (ex.: aposentadoria, viagem, fundo de emergência)
+
+Simular cenários (“se eu investir X por mês em ações de grande porte vs. ETF vs. criptomoedas…”)
+
+Monitorar aportes e evoluir no tempo
+
+Receber recomendações de alocação e rebalanceamento
+
+O foco é ser amigável, educacional e orientado a resultados, tanto para iniciantes quanto para investidores mais experientes.
+
+2. Personas Principais
+Iniciante Prudente
+
+Objetivo: entender noções básicas, começar a investir numa reserva de emergência.
+
+Needs: linguagem simples, gráficos didáticos, explicações de termos.
+
+Investidor Intermediário
+
+Objetivo: diversificar portfólio, comparar ativos, otimizar retorno/risco.
+
+Needs: comparativos detalhados, cálculos de volatilidade, notificações de rebalanceamento.
+
+Investidor Avançado
+
+Objetivo: usar APIs de corretoras, ter alertas de arbitragem, simular “e se…” de mercado.
+
+Needs: integração via OAuth com corretoras, backtests, ajustes finos de parâmetros.
+
+3. Funcionalidades Principais
+Módulo	Funcionalidades
+Onboarding	• Questionário de perfil (tolerância a risco, prazo, objetivo)
+• Captura de dados iniciais (patrimônio atual)
+Simulador de Metas	• Definir meta (valor e prazo)
+• Calcular aporte mensal ou aporte único
+• Gráfico de evolução patrimonial
+Comparador de Cenários	• Seleção de portfólios pré-definidos (conservador, moderado, arrojado)
+• Seleção customizada de ativos individuais (tickers de ações, ETFs, criptomoedas)
+• Métricas: CAGR, desvio-padrão, drawdown máximo
+Monitoramento	• Dashboard de performance em tempo real
+• Histórico de preços e aportes
+• Gráfico de alocação (pizza)
+Rebalanceamento	• Sugestão de rebalanceamento quando alocação desvia X%
+• Botão “Executar rebalanceamento” (API integrada)
+Alertas & Notificações	• Lembrete de aportes (push/email)
+• Alertas de variação expressiva de preço (>5% no dia)
+• Notificação de notícias relevantes (via RSS/API)
+Educação	• Biblioteca de micro-artigos (juros compostos, diversificação, impostos)
+• Vídeos curtos
+• Glossário interativo
+Comunidade	• Feed para compartilhar metas e conquistas
+• Grupos de discussão por tema (ETFs, DeFi, small caps)
+Relatórios & Export	• PDF/CSV de extrato de ganhos e aportes
+• Relatório para IR (ganho de capital)
+Conta & Segurança	• Autenticação (senha + 2FA)
+• Criptografia de dados sensíveis
+• OAuth para integração com corretoras
+
+4. Funcionalidades Avançadas / “Diferenciais”
+Robo-Advisor Personalizado
+
+Alocação automática periódica conforme perfil e volatilidade do mercado.
+
+Modelo de Markowitz simplificado para carteira ótima.
+
+Backtest e “E se…”
+
+Simular choques de mercado (queda de 20 % em 1 mês)
+
+Cenários otimista, base e pessimista
+
+Comparativo de Corretoras
+
+Taxas de corretagem, custódia, administração de ETF
+
+Impacto dos custos na rentabilidade líquida
+
+Integração com Open Banking
+
+Leitura de extratos bancários para sugerir quanto sobrou de cada mês para investir
+
+Gamificação Premium
+
+Desafios semanais (ex.: “semana sem faltar aporte”)
+
+Ranking de usuários por progresso percentual
+
+Inteligência Artificial
+
+Chatbot para tirar dúvidas em linguagem natural (“quanto devo investir se mudar o prazo para 7 anos?”)
+
+Análise de sentimento de notícias (positivo/negativo sobre ativos)
+
+5. Fluxo de Telas (User Flow)
+Tela de Boas-vindas & Cadastro
+
+Login / Cadastro rápido via e-mail / Google / Apple
+
+Questionário de Perfil
+
+5–7 perguntas: prazo, apetite a perdas, conhecimento prévio
+
+Dashboard Principal
+
+Visão geral da meta, patrimônio atual, evolução (gráfico de linha)
+
+Acesso rápido a “Simular Meta” e “Comparar Cenários”
+
+Simulador de Meta
+
+Campo “Valor Desejado” + “Prazo” → resultado “Aporte Mensal” + gráfico
+
+Comparador de Cenários
+
+Seleção dos ativos e peso (%)
+
+Resultado em abas: “Retorno”, “Risco”, “Custo”
+
+Detalhes de Ativo
+
+Gráfico de candlestick, indicadores (RSI, MACD), notícias recentes
+
+Notificações & Alertas
+
+Aba de histórico de alertas e opção de configuração
+
+Comunidade & Perfil
+
+Feed social e área para ajustar preferências de conta
+
+6. Arquitetura e Tecnologias
+Front-end:
+
+Web: React + TypeScript + Tailwind CSS
+
+Mobile: React Native ou Flutter
+
+Back-end:
+
+API REST/GraphQL: Node.js/Express ou Python/Flask
+
+Banco de Dados: PostgreSQL (dados transacionais) + Redis (cache)
+
+Integrações:
+
+Preços de ações: Alpha Vantage, Finnhub
+
+Criptomoedas: CoinGecko, Binance API
+
+Autenticação: Auth0 ou Firebase Auth
+
+Infraestrutura:
+
+Docker + Kubernetes (EKS/GKE)
+
+CI/CD: GitHub Actions / GitLab CI
+
+Monitoramento: Prometheus + Grafana, Sentry
+
+Segurança e Compliance:
+
+Criptografia de dados em repouso (AES-256)
+
+Conformidade LGPD + GDPR (termos de privacidade)
+
+Pen-tests regulares
+
+7. Monetização e Go-to-Market
+Freemium
+
+Simulador básico e alertas simples grátis
+
+Funcionalidades avançadas (robo-advisor, backtests) no plano Pro
+
+Parcerias com Corretoras
+
+Comissões por indicação
+
+Integrações exclusivas “um clique” para compra de ativos
+
+Conteúdo Pago
+
+Cursos e e-books dentro do app
+
+Publicidade Segmentada
+
+Ofertas de produtos financeiros (em conformidade com regras locais)
+
+8. Próximos Passos
+Validação: entrevistas com 8–10 potenciais usuários de diferentes perfis.
+
+Wireframes de Alta Fidelidade: prototipar telas-chave no Figma ou Sketch.
+
+MVP Técnico:
+
+Implementar back-end básico + simulador de meta
+
+Front-end web com dashboard e gráfico de evolução
+
+Teste Piloto: lançar para um grupo restrito, coletar métricas de uso e feedback.

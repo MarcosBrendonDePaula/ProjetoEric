@@ -1,0 +1,88 @@
+1. Objetivo do MVP
+Entregar o núcleo funcional que permita ao usuário definir metas financeiras, simular aportes e monitorar a evolução do seu patrimônio, de forma simples e confiável.
+
+2. Funcionalidades Essenciais
+Módulo	Descrição	Critério de Aceitação
+Onboarding & Perfil	• Questionário rápido (5–7 perguntas) para definir perfil de risco, horizonte e patrimônio atual.	Novo usuário completa o fluxo e recebe perfil (“Conservador”, etc.)
+Simulador de Metas	• Usuário informa “Meta” (valor e prazo) → sistema retorna:
+– Aporte mensal necessário
+– Gráfico de evolução simples (linha)	A calculadora entrega valores coerentes (ex.: 8 % a.a.) e gráfico é renderizado
+Comparador Básico	• Três portfólios pré-definidos (Conservador, Moderado, Arrojado) com alocação fixa (ex.: 70 % RF / 30 % Ações).
+• Comparativo de retorno e risco (CAGR e desvio-padrão) lado a lado.	Usuário consegue ver dois cenários simultâneos e entender qual rende mais e qual é mais volátil
+Dashboard Inicial	• Visão geral do patrimônio atual vs. meta
+• Progresso em %
+• Gráfico de aportes realizados no mês	Dashboard carrega em <2 s> e mostra dados reais de teste
+Dados de Mercado	• Integração com API grátis (ex.: Alpha Vantage para ações; CoinGecko para cripto).
+• Atualização diária de preços.	Chamadas à API retornam cotações e o sistema atualiza o banco uma vez ao dia
+Notificações de Aporte	• Lembrete por e-mail (SMTP) no dia configurado (ex.: todo dia 5) para o usuário não esquecer o aporte mensal.	E-mail de teste chega no inbox do usuário de exemplo
+
+3. Fluxo de Usuário (User Flow)
+Cadastro / Login
+
+Via e-mail/senha; sem integração externa nesta fase.
+
+Questionário de Perfil
+
+Coleta de tolerância a risco e prazo.
+
+Tela “Minhas Metas”
+
+Botão “Criar Meta” → Simulador.
+
+Simulador de Meta
+
+Inputs: Valor alvo, prazo
+
+Output: Aporte mensal + Gráfico de evolução
+
+Comparador de Portfólios
+
+Seleção de dois perfis (Conservador, Moderado, Arrojado)
+
+Exibição de métricas em tabela simples
+
+Dashboard
+
+Visão única: progresso da meta, aportes, valor de mercado atual
+
+Configuração de Notificações
+
+Definir dia do mês para lembrete por e-mail
+
+4. Tecnologias e Arquitetura (Mínimo)
+Front-end: React + TypeScript + Tailwind CSS
+
+Back-end: Node.js + Express
+
+Banco de Dados: PostgreSQL
+
+Integração de APIs:
+
+Ações/ETFs → Alpha Vantage (gratuito, limite 5 chamadas/min)
+
+Cripto → CoinGecko
+
+Envio de E-mail: SMTP simples (ex.: Mailgun ou SendGrid em plano grátis)
+
+Deploy:
+
+Docker Compose (app + db)
+
+Hospedagem inicial em VPS (DigitalOcean / AWS Lightsail)
+
+5. Cronograma Sugerido (4 sprints de 2 semanas)
+Sprint	Foco	Entregável
+1	Setup do projeto + Onboarding & DB	Formulário de perfil + modelagem SQL
+2	Simulador de Metas + Gráficos	API de cálculo + gráfico no front
+3	Comparador de Cenários + Integração API	Tabelas comparativas + atualização de preços
+4	Dashboard + Notificações de Aporte	Dashboard funcional + e-mail de lembrete
+
+6. Critérios de Sucesso do MVP
+Usabilidade: qualquer pessoa sem conhecimento prévio consegue criar uma meta e ver o aporte em < 1 minuto.
+
+Precisão: simulações coerentes com taxas médias de mercado.
+
+Estabilidade: sem bugs críticos por pelo menos uma semana de uso por um grupo piloto.
+
+Com esse escopo, você terá um MVP enxuto e focado no valor central: ajudar o usuário a planejar, simular e acompanhar seus objetivos de investimento.
+Próximo passo: escolher qual Sprint iniciar primeiro e alinhar o time (ou o seu cronograma) para a entrega!
