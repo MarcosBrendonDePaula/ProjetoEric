@@ -8,6 +8,8 @@ import { DashboardPage } from './pages/DashboardPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { GoalsPage } from './pages/GoalsPage'
 import { SimulatorPage } from './pages/SimulatorPage'
+import { MarketPage } from './pages/MarketPage'
+import { NotificationsPage } from './pages/NotificationsPage'
 import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Toaster } from './components/ui/toaster'
@@ -29,6 +31,8 @@ function App() {
               <Route path="profile" element={<ProfilePage />} />
               <Route path="goals" element={<GoalsPage />} />
               <Route path="simulator" element={<SimulatorPage />} />
+              <Route path="market" element={<MarketPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
             </Route>
           </Routes>
         </Router>

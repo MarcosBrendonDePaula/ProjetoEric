@@ -133,8 +133,35 @@ export function NotificationsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="space-y-6">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+          <div className="space-y-1">
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-32"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-48"></div>
+          </div>
+        </div>
+        
+        <div className="grid gap-6">
+          {[1,2,3].map(i => (
+            <Card key={i} className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-5 bg-gray-200 rounded animate-pulse w-40"></div>
+                </div>
+                <div className="space-y-3">
+                  {[1,2,3].map(j => (
+                    <div key={j} className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-56"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
     )
   }

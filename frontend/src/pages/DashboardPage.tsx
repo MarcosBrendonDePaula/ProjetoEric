@@ -1,18 +1,23 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { goalsApi, profileApi } from '@/lib/api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
-import { Target, TrendingUp, PlusCircle, DollarSign, Calendar } from 'lucide-react'
+import { Target, TrendingUp, PlusCircle, DollarSign, Calendar, Star, AlertCircle, CheckCircle2, Clock, Sparkles } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts'
+import { Onboarding } from '@/components/Onboarding'
+import { LoadingPage } from '@/components/ui/loading'
 
 export function DashboardPage() {
-  const { data: goalsData } = useQuery({
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  
+  const { data: goalsData, isLoading: goalsLoading } = useQuery({
     queryKey: ['goals'],
     queryFn: () => goalsApi.getAll()
   })
 
-  const { data: profileData } = useQuery({
+  const { data: profileData, isLoading: profileLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: () => profileApi.get()
   })
@@ -80,21 +85,21 @@ export function DashboardPage() {
     }
   })
 
-  if (!profile) {
+  // Verificar se precisa mostrar onboarding
+  const isNewUser = !profile || goals.length === 0
+  
+  if (profileLoading || goalsLoading) {
+    return <LoadingPage text="Carregando seu dashboard..." />
+  }
+
+  if (showOnboarding || isNewUser) {
     return (
-      <div className="space-y-6">
-        <div className="text-center py-12">
-          <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Complete seu perfil primeiro
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Para começar a usar o planejador, precisamos conhecer um pouco sobre você.
-          </p>
-          <Link to="/app/profile">
-            <Button>Completar Perfil</Button>
-          </Link>
-        </div>
+      <div className="flex items-center justify-center min-h-[500px]">
+        <Onboarding 
+          hasProfile={!!profile}
+          hasGoals={goals.length > 0}
+          onComplete={() => setShowOnboarding(false)}
+        />
       </div>
     )
   }
@@ -102,72 +107,111 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Visão geral das suas metas financeiras</p>
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Olá, {profile?.name?.split(' ')[0] || 'Usuário'}! 👋
+            </h1>
+            {totalProgress > 0 && (
+              <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                <CheckCircle2 className="h-3 w-3" />
+                <span>{totalProgress.toFixed(0)}% das metas</span>
+              </div>
+            )}
+          </div>
+          <p className="text-gray-600 text-lg">
+            {activeGoals.length > 0 
+              ? `Você tem ${activeGoals.length} meta${activeGoals.length > 1 ? 's' : ''} ativa${activeGoals.length > 1 ? 's' : ''}. Continue assim!`
+              : 'Que tal criar sua primeira meta financeira?'
+            }
+          </p>
         </div>
-        <Link to="/app/goals">
-          <Button className="flex items-center space-x-2">
-            <PlusCircle className="h-4 w-4" />
-            <span>Nova Meta</span>
+        <div className="flex space-x-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowOnboarding(true)}
+            className="flex items-center space-x-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Tour</span>
           </Button>
-        </Link>
+          <Link to="/app/goals">
+            <Button className="flex items-center space-x-2">
+              <PlusCircle className="h-4 w-4" />
+              <span>Nova Meta</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Metas Ativas</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-blue-900">Metas Ativas</CardTitle>
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Target className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeGoals.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {completedGoals.length} concluídas
+            <div className="text-3xl font-bold text-blue-900">{activeGoals.length}</div>
+            <p className="text-sm text-blue-700 mt-1">
+              {completedGoals.length > 0 ? `${completedGoals.length} concluída${completedGoals.length > 1 ? 's' : ''}` : 'Comece criando uma meta'}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Total das Metas</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-green-900">Valor Total das Metas</CardTitle>
+            <div className="p-2 bg-green-100 rounded-lg">
+              <DollarSign className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-green-900">
               R$ {totalGoalsValue.toLocaleString('pt-BR')}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-green-700 mt-1">
               Objetivo total
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Atual</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-purple-900">Valor Atual</CardTitle>
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-purple-900">
               R$ {totalCurrentValue.toLocaleString('pt-BR')}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-purple-700 mt-1">
               Acumulado até agora
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Progresso Geral</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-orange-900">Progresso Geral</CardTitle>
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Star className="h-4 w-4 text-orange-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalProgress.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-bold text-orange-900">{totalProgress.toFixed(1)}%</div>
+            <div className="w-full bg-orange-200 rounded-full h-2 mt-2">
+              <div 
+                className="bg-orange-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(totalProgress, 100)}%` }}
+              />
+            </div>
+            <p className="text-sm text-orange-700 mt-1">
               Das suas metas
             </p>
           </CardContent>
