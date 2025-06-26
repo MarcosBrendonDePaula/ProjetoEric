@@ -68,6 +68,68 @@ interface ScenarioComparison {
   totalReturn: number
 }
 
+// Dados históricos reais para simulação (retornos anuais)
+const historicalData = {
+  periods: [
+    {
+      name: 'Bear Market 2020 (Março-Dezembro)',
+      startDate: '2020-03-01',
+      endDate: '2020-12-31',
+      duration: '10 meses',
+      description: 'Pandemia COVID-19 - Crash e recuperação espetacular',
+      assets: {
+        'SP500': { return: 16.26, volatility: 34.2, label: 'S&P 500' },
+        'BTC': { return: 300.0, volatility: 87.6, label: 'Bitcoin' },
+        'ETH': { return: 469.0, volatility: 112.3, label: 'Ethereum' },
+        'IBOV': { return: 2.92, volatility: 42.1, label: 'Ibovespa' },
+        'CDI': { return: 2.75, volatility: 0.1, label: 'CDI' }
+      }
+    },
+    {
+      name: 'Crypto Winter 2022',
+      startDate: '2022-01-01',
+      endDate: '2022-12-31',
+      duration: '1 ano',
+      description: 'Colapso das criptos - Terra Luna, FTX',
+      assets: {
+        'SP500': { return: -18.11, volatility: 25.4, label: 'S&P 500' },
+        'BTC': { return: -64.2, volatility: 79.2, label: 'Bitcoin' },
+        'ETH': { return: -67.6, volatility: 88.7, label: 'Ethereum' },
+        'IBOV': { return: 4.69, volatility: 28.9, label: 'Ibovespa' },
+        'CDI': { return: 11.25, volatility: 0.2, label: 'CDI' }
+      }
+    },
+    {
+      name: 'Bull Run 2017',
+      startDate: '2017-01-01',
+      endDate: '2017-12-31',
+      duration: '1 ano',
+      description: 'Explosão das criptomoedas',
+      assets: {
+        'SP500': { return: 21.83, volatility: 11.1, label: 'S&P 500' },
+        'BTC': { return: 1318.0, volatility: 95.4, label: 'Bitcoin' },
+        'ETH': { return: 9162.0, volatility: 156.8, label: 'Ethereum' },
+        'IBOV': { return: 26.86, volatility: 18.2, label: 'Ibovespa' },
+        'CDI': { return: 9.93, volatility: 0.1, label: 'CDI' }
+      }
+    },
+    {
+      name: 'Crise 2008',
+      startDate: '2008-01-01',
+      endDate: '2008-12-31',
+      duration: '1 ano',
+      description: 'Crise financeira global',
+      assets: {
+        'SP500': { return: -37.0, volatility: 32.7, label: 'S&P 500' },
+        'BTC': { return: 0, volatility: 0, label: 'Bitcoin (não existia)' },
+        'ETH': { return: 0, volatility: 0, label: 'Ethereum (não existia)' },
+        'IBOV': { return: -41.22, volatility: 38.5, label: 'Ibovespa' },
+        'CDI': { return: 12.4, volatility: 0.3, label: 'CDI' }
+      }
+    }
+  ]
+}
+
 const portfolios: PortfolioComparison[] = [
   {
     name: 'Conservador',
@@ -137,6 +199,9 @@ export function SimulatorPage() {
   const [simulationData, setSimulationData] = useState<SimulationData[]>([])
   const [scenarios, setScenarios] = useState<ScenarioComparison[]>([])
   const [showComparison, setShowComparison] = useState(false)
+  const [selectedHistoricalPeriod, setSelectedHistoricalPeriod] = useState(historicalData.periods[0])
+  const [historicalInvestment, setHistoricalInvestment] = useState(10000)
+  const [selectedAssets, setSelectedAssets] = useState(['BTC', 'ETH', 'SP500', 'CDI'])
 
   const calculateSimulation = () => {
     const monthlyRate = customReturn / 100 / 12
@@ -251,10 +316,14 @@ export function SimulatorPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="simulator" className="flex items-center space-x-2">
             <Calculator className="h-4 w-4" />
             <span>Simulador</span>
+          </TabsTrigger>
+          <TabsTrigger value="historical" className="flex items-center space-x-2">
+            <TrendingUp className="h-4 w-4" />
+            <span>Histórico</span>
           </TabsTrigger>
           <TabsTrigger value="portfolios" className="flex items-center space-x-2">
             <BarChart3 className="h-4 w-4" />
@@ -542,6 +611,225 @@ export function SimulatorPage() {
                       </ComposedChart>
                     </ResponsiveContainer>
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="historical" className="space-y-6">
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Configurações Históricas */}
+            <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-purple-900">
+                  <TrendingUp className="h-5 w-5" />
+                  <span>Simulação Histórica</span>
+                </CardTitle>
+                <CardDescription className="text-purple-700">
+                  Teste sua estratégia em cenários reais do passado
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Valor do Investimento */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-medium text-purple-900">Valor Investido</label>
+                    <span className="text-sm font-bold text-purple-700">{formatCurrency(historicalInvestment)}</span>
+                  </div>
+                  <Slider
+                    value={[historicalInvestment]}
+                    onValueChange={([value]) => setHistoricalInvestment(value)}
+                    max={100000}
+                    min={1000}
+                    step={1000}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-purple-600">
+                    <span>R$ 1.000</span>
+                    <span>R$ 100.000</span>
+                  </div>
+                </div>
+
+                {/* Período Histórico */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-purple-900">Período Histórico</label>
+                  <Select 
+                    value={selectedHistoricalPeriod.name}
+                    onValueChange={(value) => {
+                      const period = historicalData.periods.find(p => p.name === value)!
+                      setSelectedHistoricalPeriod(period)
+                    }}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {historicalData.periods.map(period => (
+                        <SelectItem key={period.name} value={period.name}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{period.name}</span>
+                            <span className="text-xs text-gray-500">{period.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Info do Período */}
+                <div className="p-3 bg-white/50 rounded-lg border border-purple-200">
+                  <div className="text-xs text-purple-900 space-y-1">
+                    <div><strong>Período:</strong> {selectedHistoricalPeriod.duration}</div>
+                    <div><strong>Contexto:</strong> {selectedHistoricalPeriod.description}</div>
+                  </div>
+                </div>
+
+                {/* Seleção de Ativos */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-purple-900">Ativos para Comparar</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(selectedHistoricalPeriod.assets).map(([key, asset]) => (
+                      <label key={key} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedAssets.includes(key)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedAssets(prev => [...prev, key])
+                            } else {
+                              setSelectedAssets(prev => prev.filter(a => a !== key))
+                            }
+                          }}
+                          className="rounded"
+                        />
+                        <span className="text-xs text-purple-800">{asset.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Resultados Históricos */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Cards de Resultados */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {selectedAssets.map(assetKey => {
+                  const asset = selectedHistoricalPeriod.assets[assetKey]
+                  if (!asset || asset.return === 0) return null
+
+                  const finalValue = historicalInvestment * (1 + asset.return / 100)
+                  const profit = finalValue - historicalInvestment
+                  const isPositive = profit >= 0
+
+                  return (
+                    <Card key={assetKey} className={`${isPositive ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : 'bg-gradient-to-br from-red-50 to-rose-50 border-red-200'}`}>
+                      <CardContent className="p-4">
+                        <div className="text-center">
+                          <div className="text-xs font-medium text-gray-600 mb-1">{asset.label}</div>
+                          <div className={`text-lg font-bold ${isPositive ? 'text-green-700' : 'text-red-700'}`}>
+                            {formatCurrency(finalValue)}
+                          </div>
+                          <div className={`text-xs ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                            {isPositive ? '+' : ''}{formatCurrency(profit)}
+                          </div>
+                          <Badge className={`mt-1 ${isPositive ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+                            {formatPercentage(asset.return)}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+
+              {/* Gráfico de Comparação */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="h-5 w-5" />
+                    <span>Comparação de Performance - {selectedHistoricalPeriod.name}</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Como diferentes ativos se comportaram no período selecionado
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart 
+                        data={selectedAssets.map(assetKey => {
+                          const asset = selectedHistoricalPeriod.assets[assetKey]
+                          if (!asset || asset.return === 0) return null
+                          
+                          return {
+                            name: asset.label,
+                            inicial: historicalInvestment,
+                            final: historicalInvestment * (1 + asset.return / 100),
+                            retorno: asset.return,
+                            volatilidade: asset.volatility
+                          }
+                        }).filter(Boolean)}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis yAxisId="left" tickFormatter={(value) => formatCurrency(value)} />
+                        <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => `${value}%`} />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            name === 'retorno' ? formatPercentage(value) : formatCurrency(value),
+                            name === 'inicial' ? 'Valor Inicial' : 
+                            name === 'final' ? 'Valor Final' : 
+                            name === 'retorno' ? 'Retorno' : 'Volatilidade'
+                          ]}
+                        />
+                        <Bar yAxisId="left" dataKey="inicial" fill="#94A3B8" name="inicial" />
+                        <Bar yAxisId="left" dataKey="final" fill="#10B981" name="final" />
+                        <Line yAxisId="right" type="monotone" dataKey="retorno" stroke="#EF4444" strokeWidth={2} name="retorno" />
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Análise e Insights */}
+              <Card className="bg-yellow-50 border-yellow-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-yellow-900">
+                    <Lightbulb className="h-5 w-5" />
+                    <span>Insights do Período</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-yellow-800">
+                  {selectedHistoricalPeriod.name.includes('2020') && (
+                    <>
+                      <p className="text-sm">🏥 <strong>COVID-19:</strong> Criptomoedas se mostraram resilientes após crash inicial.</p>
+                      <p className="text-sm">📈 <strong>Recuperação V:</strong> Ativos de risco tiveram performance excepcional.</p>
+                      <p className="text-sm">💡 <strong>Lição:</strong> Manter posições durante volatilidade pode ser recompensador.</p>
+                    </>
+                  )}
+                  {selectedHistoricalPeriod.name.includes('2022') && (
+                    <>
+                      <p className="text-sm">❄️ <strong>Crypto Winter:</strong> Ano devastador para criptomoedas.</p>
+                      <p className="text-sm">🏦 <strong>Renda Fixa:</strong> CDI performou bem com alta da Selic.</p>
+                      <p className="text-sm">💡 <strong>Lição:</strong> Diversificação protege em cenários adversos.</p>
+                    </>
+                  )}
+                  {selectedHistoricalPeriod.name.includes('2017') && (
+                    <>
+                      <p className="text-sm">🚀 <strong>Bull Run:</strong> Ethereum teve retorno astronômico de +9000%.</p>
+                      <p className="text-sm">⚡ <strong>FOMO:</strong> Período de euforia especulativa extrema.</p>
+                      <p className="text-sm">💡 <strong>Lição:</strong> Ganhos extraordinários vêm com riscos enormes.</p>
+                    </>
+                  )}
+                  {selectedHistoricalPeriod.name.includes('2008') && (
+                    <>
+                      <p className="text-sm">💥 <strong>Crise Global:</strong> Ações despencaram mundialmente.</p>
+                      <p className="text-sm">🏛️ <strong>Renda Fixa:</strong> CDI ofereceu proteção e retorno positivo.</p>
+                      <p className="text-sm">💡 <strong>Lição:</strong> Em crises, qualidade e liquidez são fundamentais.</p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>

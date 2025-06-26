@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -13,13 +14,16 @@ import {
   BarChart3,
   Bell,
   ChevronRight,
-  HelpCircle
+  HelpCircle,
+  Menu,
+  ChevronLeft
 } from 'lucide-react'
 
 export function Layout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const { toast } = useToast()
+  const [isMenuCollapsed, setIsMenuCollapsed] = useState(false)
 
   const navigation = [
     { 
@@ -142,12 +146,24 @@ export function Layout() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           {/* Sidebar */}
-          <aside className="w-72 flex-shrink-0">
+          <aside className={`${isMenuCollapsed ? 'w-16' : 'w-72'} flex-shrink-0 transition-all duration-300`}>
             <div className="space-y-4">
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-                <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-1">Menu Principal</h2>
-                  <p className="text-sm text-gray-500">Navegue pelas funcionalidades</p>
+              <Card className="p-4 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  {!isMenuCollapsed && (
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-1">Menu Principal</h2>
+                      <p className="text-sm text-gray-500">Navegue pelas funcionalidades</p>
+                    </div>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsMenuCollapsed(!isMenuCollapsed)}
+                    className="flex items-center space-x-1"
+                  >
+                    {isMenuCollapsed ? <Menu className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                  </Button>
                 </div>
                 <nav className="space-y-2">
                   {navigation.map((item) => {
@@ -158,7 +174,8 @@ export function Layout() {
                       <Link
                         key={item.name}
                         to={item.href}
-                        className={`group flex items-start space-x-3 p-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        title={isMenuCollapsed ? item.name : undefined}
+                        className={`group flex items-start ${isMenuCollapsed ? 'justify-center p-2' : 'space-x-3 p-3'} rounded-lg text-sm font-medium transition-all duration-200 ${
                           isActive
                             ? 'bg-primary text-primary-foreground shadow-md transform scale-[1.02]'
                             : 'text-gray-700 hover:bg-gray-50 hover:shadow-sm'
@@ -171,16 +188,18 @@ export function Layout() {
                         }`}>
                           <Icon className="h-4 w-4" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium">{item.name}</div>
-                          <div className={`text-xs mt-0.5 ${
-                            isActive 
-                              ? 'text-primary-foreground/80' 
-                              : 'text-gray-500'
-                          }`}>
-                            {item.description}
+                        {!isMenuCollapsed && (
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium">{item.name}</div>
+                            <div className={`text-xs mt-0.5 ${
+                              isActive 
+                                ? 'text-primary-foreground/80' 
+                                : 'text-gray-500'
+                            }`}>
+                              {item.description}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </Link>
                     )
                   })}
@@ -188,15 +207,20 @@ export function Layout() {
               </Card>
               
               {/* Quick Help Card */}
-              <Card className="p-4 bg-blue-50 border-blue-200">
-                <div className="flex items-center space-x-2 mb-2">
-                  <HelpCircle className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-900">Dicas R\u00e1pidas</span>
-                </div>
-                <p className="text-xs text-blue-700 leading-relaxed">
-                  Comece definindo seu perfil financeiro, depois crie suas metas e acompanhe o progresso no dashboard.
-                </p>
-              </Card>
+              {!isMenuCollapsed && (
+                <Card className="p-4 bg-blue-50 border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <HelpCircle className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-900">Dicas Rápidas</span>
+                  </div>
+                  <div className="space-y-2 text-xs text-blue-700 leading-relaxed">
+                    <p>💡 <strong>Início:</strong> Configure seu perfil antes de criar metas</p>
+                    <p>🎯 <strong>Metas:</strong> Defina objetivos claros e prazos realistas</p>
+                    <p>📊 <strong>Mercado:</strong> Acompanhe investimentos em tempo real</p>
+                    <p>🧮 <strong>Simulador:</strong> Teste cenários antes de investir</p>
+                  </div>
+                </Card>
+              )}
             </div>
           </aside>
 
